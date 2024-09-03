@@ -7,11 +7,11 @@
             "type": "String"
         },
         "__encodeURIComponent__capacities_CopilotForSecurityMSDemo____externalid": {
-            "defaultValue": "/subscriptions/@{encodeURIComponent('60f0fad6-2655-4552-ae41-ba05ebfe561c')}/resourceGroups/@{encodeURIComponent('rg-CopilotForSecurity')}/providers/@{encodeURIComponent('Microsoft.SecurityCopilot')}/@{encodeURIComponent('capacities/CopilotForSecurityMSDemo')}",
+            "defaultValue": "",
             "type": "String"
         },
         "connections_arm_externalid": {
-            "defaultValue": "/subscriptions/60f0fad6-2655-4552-ae41-ba05ebfe561c/resourceGroups/rg-CopilotForSecurity/providers/Microsoft.Web/connections/arm",
+            "defaultValue": "",
             "type": "String"
         }
     },
