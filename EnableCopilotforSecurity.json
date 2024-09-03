@@ -1,0 +1,127 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_ProvisionCopilotForSecurity_name": {
+            "defaultValue": "ProvisionCopilotForSecurity",
+            "type": "String"
+        },
+        "__encodeURIComponent__capacities_CopilotForSecurityMSDemo____externalid": {
+            "defaultValue": "/subscriptions/@{encodeURIComponent('60f0fad6-2655-4552-ae41-ba05ebfe561c')}/resourceGroups/@{encodeURIComponent('rg-CopilotForSecurity')}/providers/@{encodeURIComponent('Microsoft.SecurityCopilot')}/@{encodeURIComponent('capacities/CopilotForSecurityMSDemo')}",
+            "type": "String"
+        },
+        "connections_arm_externalid": {
+            "defaultValue": "/subscriptions/60f0fad6-2655-4552-ae41-ba05ebfe561c/resourceGroups/rg-CopilotForSecurity/providers/Microsoft.Web/connections/arm",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_ProvisionCopilotForSecurity_name')]",
+            "location": "northeurope",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "Manual_Trigger_(not_used)": {
+                            "recurrence": {
+                                "interval": 12,
+                                "frequency": "Month",
+                                "timeZone": "Romance Standard Time"
+                            },
+                            "evaluatedRecurrence": {
+                                "interval": 12,
+                                "frequency": "Month",
+                                "timeZone": "Romance Standard Time"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "Create_Copilot_for_Security_Capacity": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['arm']['connectionId']"
+                                    }
+                                },
+                                "method": "put",
+                                "body": {
+                                    "location": "westeurope",
+                                    "properties": {
+                                        "numberOfUnits": 1,
+                                        "crossGeoCompute": "NotAllowed",
+                                        "geo": "EU"
+                                    }
+                                },
+                                "path": "[parameters('__encodeURIComponent__capacities_CopilotForSecurityMSDemo____externalid')]",
+                                "queries": {
+                                    "x-ms-api-version": "2023-12-01-preview"
+                                }
+                            }
+                        },
+                        "Wait_2_hours": {
+                            "runAfter": {
+                                "Create_Copilot_for_Security_Capacity": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Wait",
+                            "inputs": {
+                                "interval": {
+                                    "count": 2,
+                                    "unit": "Hour"
+                                }
+                            }
+                        },
+                        "Delete_a_resource": {
+                            "runAfter": {
+                                "Wait_2_hours": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['arm']['connectionId']"
+                                    }
+                                },
+                                "method": "delete",
+                                "path": "[parameters('__encodeURIComponent__capacities_CopilotForSecurityMSDemo____externalid')]",
+                                "queries": {
+                                    "x-ms-api-version": "2023-12-01-preview"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "arm": {
+                                "id": "/subscriptions/60f0fad6-2655-4552-ae41-ba05ebfe561c/providers/Microsoft.Web/locations/northeurope/managedApis/arm",
+                                "connectionId": "[parameters('connections_arm_externalid')]",
+                                "connectionName": "arm"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
